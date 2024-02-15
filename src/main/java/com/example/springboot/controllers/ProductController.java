@@ -4,7 +4,6 @@ import com.example.springboot.dtos.ProductRecordDto;
 import com.example.springboot.models.ProductModel;
 import com.example.springboot.repositories.ProductRepository;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.rmi.server.UID;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
