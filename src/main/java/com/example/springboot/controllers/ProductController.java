@@ -35,7 +35,6 @@ public class ProductController implements Serializable {
 
     @GetMapping("/products")
     public ResponseEntity<List<ProductModel>> getAllProducts(){
-        //return new ResponseEntity<>(productRepository.findAll(), HttpStatus.OK);
         return ResponseEntity.status(HttpStatus.OK).body(productRepository.findAll());
     }
 
