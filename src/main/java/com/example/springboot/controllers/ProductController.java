@@ -4,6 +4,10 @@ import com.example.springboot.dtos.ProductRecordDto;
 import com.example.springboot.models.ProductModel;
 import com.example.springboot.repositories.ProductRepository;
 import com.example.springboot.services.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +23,8 @@ import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 @RestController
-public class ProductController implements Serializable {
+public class ProductController implements Serializable, ProductAPI {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -35,6 +38,7 @@ public class ProductController implements Serializable {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.insert(productModel));
     }
 
+
     @GetMapping("/products")
     public ResponseEntity<List<ProductModel>> getAllProducts(){
         List<ProductModel> productList = productService.findAll();
@@ -47,6 +51,7 @@ public class ProductController implements Serializable {
         return ResponseEntity.status(HttpStatus.OK).body(productList);
     }
 
+    @Override
     @GetMapping("/products/{id}")
     public ResponseEntity<Object> getOneProduct(@PathVariable(value = "id") UUID id){
         Optional<ProductModel> productO = productService.findById(id);
@@ -58,6 +63,7 @@ public class ProductController implements Serializable {
         return ResponseEntity.status(HttpStatus.OK).body(productO.get());
     }
 
+    @Override
     @PutMapping("/products/{id}")
     public ResponseEntity<Object> updateProduct(@PathVariable(value = "id") UUID id,
                                                 @RequestBody @Valid ProductRecordDto productRecordDto) {
@@ -70,6 +76,7 @@ public class ProductController implements Serializable {
         return ResponseEntity.status(HttpStatus.OK).body(productService.update(id ,productModel));
     }
 
+    @Override
     @DeleteMapping("/products/{id}")
     public ResponseEntity<Object> deleteProduct(@PathVariable(value = "id") UUID id){
         Optional<ProductModel> productO = productService.findById(id);
