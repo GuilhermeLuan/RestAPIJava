@@ -146,7 +146,7 @@ Special thank you for all people that contributed for this project.
   <tr>
     <td align="center">
       <a href="#">
-        <img src="https://avatars.githubusercontent.com/u/32211071?v=4" width="100px;" alt="Fernanda Kipper Profile Picture"/><br>
+        <img src="https://avatars.githubusercontent.com/u/32211071?v=4" width="100px;" alt="Guilherme Luan Profile Picture"/><br>
         <sub>
           <b>Guilherme Luan</b>
         </sub>
