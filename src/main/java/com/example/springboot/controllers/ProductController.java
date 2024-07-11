@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
@@ -30,13 +33,20 @@ public class ProductController implements Serializable, ProductAPI {
 
     @GetMapping("/products")
     public ResponseEntity<List<ProductModel>> getAllProducts() {
-        return new ResponseEntity<>(productService.findAll(), HttpStatus.OK);
+        List<ProductModel> list = productService.findAll();
+        for (ProductModel productModel : list) {
+            UUID id = productModel.getIdProduct();
+            productModel.add(linkTo(methodOn(ProductController.class).getOneProduct(id)).withSelfRel());
+        }
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @Override
     @GetMapping("/products/{id}")
     public ResponseEntity<Object> getOneProduct(@PathVariable UUID id) {
-        return new ResponseEntity<>(productService.findByIdOrThrowBadRequestException(id), HttpStatus.OK);
+        ProductModel product = productService.findByIdOrThrowBadRequestException(id);
+        product.add(linkTo(methodOn(ProductController.class).getOneProduct(id)).withSelfRel());
+        return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @Override
