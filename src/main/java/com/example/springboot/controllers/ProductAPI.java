@@ -1,5 +1,6 @@
 package com.example.springboot.controllers;
 
+import com.example.springboot.dtos.ProductPutRequestBody;
 import com.example.springboot.dtos.ProductRecordDto;
 import com.example.springboot.models.ProductModel;
 import io.swagger.v3.oas.annotations.Operation;
@@ -54,8 +55,7 @@ public interface ProductAPI {
             @ApiResponse(responseCode = "400", description = "Dados inválidos"),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     })
-    ResponseEntity<Object> updateProduct(@PathVariable(value = "id") UUID id,
-                                         @RequestBody @Valid ProductRecordDto productRecordDto);
+    ResponseEntity<Object> updateProduct(@RequestBody @Valid ProductPutRequestBody productPutRequestBody);
 
     @Operation(
             summary = "Deleta um produto",

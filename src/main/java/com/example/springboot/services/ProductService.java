@@ -1,19 +1,25 @@
 package com.example.springboot.services;
 
-import com.example.springboot.dtos.ProductRecordDto;
+import com.example.springboot.Exception.BadRequestException;
+import com.example.springboot.dtos.ProductPutRequestBody;
+import com.example.springboot.mapper.ProductMapper;
 import com.example.springboot.models.ProductModel;
 import com.example.springboot.repositories.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class ProductService {
+public class ProductService implements Serializable {
 
-    private final ProductRepository productRepository;
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    private final transient ProductRepository productRepository;
 
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
@@ -23,26 +29,24 @@ public class ProductService {
         return productRepository.findAll();
     }
 
+    @Transactional
     public ProductModel insert(ProductModel productModel) {
         return  productRepository.save(productModel);
     }
 
-    public Optional<ProductModel> findById(UUID id){
-        return productRepository.findById(id);
+    public ProductModel findByIdOrThrowBadRequestException(UUID id){
+        return productRepository.findById(id).
+                orElseThrow(() -> new BadRequestException("Product not found"));
     }
 
     public void deleteById(UUID id){
-        productRepository.deleteById(id);
+        productRepository.deleteById(findByIdOrThrowBadRequestException(id).getIdProduct());
     }
 
-    public ProductModel update(UUID id, ProductModel productModel){
-        ProductModel product = productRepository.getReferenceById(id);
-        updateData(product, productModel);
+    public ProductModel update(ProductPutRequestBody productPutRequestBody){
+        ProductModel productSaved = findByIdOrThrowBadRequestException(UUID.fromString(productPutRequestBody.idProduct()));
+        ProductModel productModel = ProductMapper.INSTANCE.toProduct(productPutRequestBody);
+        productModel.setIdProduct(productSaved.getIdProduct());
         return productRepository.save(productModel);
     }
-    public void updateData(ProductModel product, ProductModel obj){
-        product.setName(obj.getName());
-        product.setValue(obj.getValue());
-    }
-
 }
