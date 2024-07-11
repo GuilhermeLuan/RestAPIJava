@@ -44,13 +44,13 @@ docker compose up
 
 <h2 id="routes">📍 API Endpoints</h2>
 
-| route                                  | description                                                   |
-|----------------------------------------|---------------------------------------------------------------|
-| <kbd>GET /api/products </kbd>          | retrieves a list of all products.                             |
-| <kbd>GET /api/products/{UUID} </kbd>   | retrieves a specific product by its unique identifier (UUID). |
-| <kbd>PUT /api/products/{UUID}</kbd>    | modifies a specific product by its unique identifier (UUID).  |
-| <kbd>POST /api/products</kbd>          | creates a product in the database.                            |
-| <kbd>DELETE /api/products/{UUID}</kbd> | deletes a specific product by its unique identifier (UUID).   |
+| route                                  | description                                                          |
+|----------------------------------------|----------------------------------------------------------------------|
+| <kbd>GET /api/products </kbd>          | retrieves a list of all products.                                    |
+| <kbd>GET /api/products/{UUID} </kbd>   | retrieves a specific product by its unique identifier (UUID).        |
+| <kbd>PUT /api/products</kbd>           | modifies a specific product by its unique identifier on body (UUID). |
+| <kbd>POST /api/products</kbd>          | creates a product in the database.                                   |
+| <kbd>DELETE /api/products/{UUID}</kbd> | deletes a specific product by its unique identifier (UUID).          |
 
 <h3 id="get-auth-detail">GET /api/products</h3>
 
@@ -96,6 +96,7 @@ docker compose up
 **REQUEST**
 ```json
 {
+  "idProduct": "2de63670-64b8-4333-9365-30b980cc3f16",
   "name": "Iphone 14 PRO Red",
   "value": 7900
 }
