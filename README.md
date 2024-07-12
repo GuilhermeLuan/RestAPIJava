@@ -9,14 +9,15 @@
 </p>
 
 <p align="center">
-    <b>A RestFull API that registers products with CRUD operations.</b>
+    <b>A Rest API that registers products with CRUD operations.</b>
 </p>
 
 <h2 id="technologies">💻 Technologies</h2>
 
 - Java
 - PostgreSQL
-- SpringBoot
+- Spring Boot
+- JUnit 5
 - Docker
 
 <h2 id="started">🚀 Getting started</h2>
