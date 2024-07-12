@@ -2,6 +2,7 @@ package com.example.springboot.services;
 
 import com.example.springboot.Exception.BadRequestException;
 import com.example.springboot.dtos.ProductPutRequestBody;
+import com.example.springboot.dtos.ProductPostRequestBody;
 import com.example.springboot.mapper.ProductMapper;
 import com.example.springboot.models.ProductModel;
 import com.example.springboot.repositories.ProductRepository;
@@ -30,8 +31,9 @@ public class ProductService implements Serializable {
     }
 
     @Transactional
-    public ProductModel insert(ProductModel productModel) {
-        return  productRepository.save(productModel);
+    public ProductModel insert(ProductPostRequestBody productPostRequestBody) {
+        ProductModel productModel = ProductMapper.INSTANCE.toProduct(productPostRequestBody);
+        return productRepository.save(productModel);
     }
 
     public ProductModel findByIdOrThrowBadRequestException(UUID id){

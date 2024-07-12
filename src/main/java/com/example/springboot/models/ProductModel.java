@@ -13,6 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor @AllArgsConstructor
 
 @Entity
+@Builder
 @Table(name = "TB_PRODUCTS")
 public class ProductModel extends RepresentationModel<ProductModel> implements Serializable {
     @Serial

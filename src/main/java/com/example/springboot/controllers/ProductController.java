@@ -1,8 +1,7 @@
 package com.example.springboot.controllers;
 
 import com.example.springboot.dtos.ProductPutRequestBody;
-import com.example.springboot.dtos.ProductRecordDto;
-import com.example.springboot.mapper.ProductMapper;
+import com.example.springboot.dtos.ProductPostRequestBody;
 import com.example.springboot.models.ProductModel;
 import com.example.springboot.services.ProductService;
 import jakarta.validation.Valid;
@@ -26,8 +25,8 @@ public class ProductController implements Serializable, ProductAPI {
     }
 
     @PostMapping("/products")
-    public ResponseEntity<ProductModel> saveProduct(@RequestBody @Valid ProductRecordDto productRecordDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.insert(ProductMapper.INSTANCE.toProduct(productRecordDto)));
+    public ResponseEntity<ProductModel> saveProduct(@RequestBody @Valid ProductPostRequestBody productPostRequestBody) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.insert(productPostRequestBody));
     }
 
 
@@ -43,7 +42,7 @@ public class ProductController implements Serializable, ProductAPI {
 
     @Override
     @GetMapping("/products/{id}")
-    public ResponseEntity<Object> getOneProduct(@PathVariable UUID id) {
+    public ResponseEntity<ProductModel> getOneProduct(@PathVariable UUID id) {
         ProductModel product = productService.findByIdOrThrowBadRequestException(id);
         product.add(linkTo(methodOn(ProductController.class).getOneProduct(id)).withSelfRel());
         return new ResponseEntity<>(product, HttpStatus.OK);
@@ -51,13 +50,13 @@ public class ProductController implements Serializable, ProductAPI {
 
     @Override
     @PutMapping("/products")
-    public ResponseEntity<Object> updateProduct(@RequestBody @Valid ProductPutRequestBody productPutRequestBody) {
+    public ResponseEntity<ProductModel> updateProduct(@RequestBody @Valid ProductPutRequestBody productPutRequestBody) {
         return new ResponseEntity<>(productService.update(productPutRequestBody), HttpStatus.OK);
     }
 
     @Override
     @DeleteMapping("/products/{id}")
-    public ResponseEntity<Object> deleteProduct(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
         productService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

@@ -1,7 +1,7 @@
 package com.example.springboot.controllers;
 
+import com.example.springboot.dtos.ProductPostRequestBody;
 import com.example.springboot.dtos.ProductPutRequestBody;
-import com.example.springboot.dtos.ProductRecordDto;
 import com.example.springboot.models.ProductModel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -25,7 +25,7 @@ public interface ProductAPI {
             @ApiResponse(responseCode = "400", description = "Dados inválidos"),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     })
-    ResponseEntity<ProductModel> saveProduct(@RequestBody @Valid ProductRecordDto productRecordDto);
+    ResponseEntity<ProductModel> saveProduct(@RequestBody @Valid ProductPostRequestBody productPostRequestBody);
 
     @Operation(
             summary = "Busca todos os produtos",
@@ -44,7 +44,7 @@ public interface ProductAPI {
             @ApiResponse(responseCode = "404", description = "Produto não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     })
-    ResponseEntity<Object> getOneProduct(@PathVariable(value = "id") UUID id);
+    ResponseEntity<ProductModel> getOneProduct(@PathVariable(value = "id") UUID id);
 
     @Operation(
             summary = "Atualiza um produto",
@@ -55,7 +55,7 @@ public interface ProductAPI {
             @ApiResponse(responseCode = "400", description = "Dados inválidos"),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     })
-    ResponseEntity<Object> updateProduct(@RequestBody @Valid ProductPutRequestBody productPutRequestBody);
+    ResponseEntity<ProductModel> updateProduct(@RequestBody @Valid ProductPutRequestBody productPutRequestBody);
 
     @Operation(
             summary = "Deleta um produto",
@@ -65,5 +65,5 @@ public interface ProductAPI {
             @ApiResponse(responseCode = "404", description = "Produto não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     })
-    ResponseEntity<Object> deleteProduct(@PathVariable(value = "id") UUID id);
+    ResponseEntity<Void> deleteProduct(@PathVariable(value = "id") UUID id);
 }
