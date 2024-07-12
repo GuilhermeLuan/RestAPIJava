@@ -52,8 +52,8 @@ class ProductControllerTest {
     }
 
     @Test
-    @DisplayName("save returns product when successful")
-    void save_ReturnsProduct_WhenSuccessful() {
+    @DisplayName("saveProduct returns product when successful")
+    void saveProduct_ReturnsProduct_WhenSuccessful() {
         ProductModel productModel = productController.saveProduct(ProductPostRequestBodyCreator.createProductPostRequestBody()).getBody();
 
         Assertions.assertThat(productModel).isNotNull().isEqualTo(ProductCreator.createValidProduct());
@@ -78,8 +78,8 @@ class ProductControllerTest {
     }
 
     @Test
-    @DisplayName("getAllProducts returns empty list when there is any product ")
-    void getAllProducts_ReturnsAnEmptyList_WhenThereIsAnyProduct() {
+    @DisplayName("getAllProducts returns empty list when there is no product ")
+    void getAllProducts_ReturnsAnEmptyList_WhenThereIsNoProduct() {
         BDDMockito.when(productServiceMock.findAll())
                 .thenReturn(Collections.emptyList());
 
@@ -91,7 +91,7 @@ class ProductControllerTest {
     }
 
     @Test
-    @DisplayName("getOneProduct returns product when successful")
+    @DisplayName("getOneProductById returns product when successful")
     void getOneProductById_ReturnsProduct_WhenSuccessful() {
         UUID expectedId = ProductCreator.createValidProduct().getIdProduct();
         String expectedName = ProductCreator.createValidProduct().getName();
