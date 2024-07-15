@@ -9,7 +9,7 @@ public class ProductCreator {
     public static ProductModel createProductToBeSaved() {
         return ProductModel.builder()
                 .name("Iphone 15")
-                .value(BigDecimal.valueOf(5000.00))
+                .valueProduct(BigDecimal.valueOf(5000.99))
                 .build();
     }
 
@@ -17,7 +17,7 @@ public class ProductCreator {
         return ProductModel.builder()
                 .idProduct(UUID.fromString("dd0e2cf3-d1d3-4bf5-a9a6-d0ef691c8892"))
                 .name("Iphone 15")
-                .value(BigDecimal.valueOf(5000.00))
+                .valueProduct(BigDecimal.valueOf(5000.99))
                 .build();
     }
 
@@ -25,7 +25,7 @@ public class ProductCreator {
         return ProductModel.builder()
                 .idProduct(UUID.fromString("dd0e2cf3-d1d3-4bf5-a9a6-d0ef691c8892"))
                 .name("Iphone 15")
-                .value(BigDecimal.valueOf(5000.00))
+                .valueProduct(BigDecimal.valueOf(5000.99))
                 .build();
     }
 }

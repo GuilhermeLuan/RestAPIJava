@@ -6,7 +6,7 @@ public class ProductPostRequestBodyCreator {
     public static ProductPostRequestBody createProductPostRequestBody() {
         return new ProductPostRequestBody(
                 ProductCreator.createProductToBeSaved().getName(),
-                ProductCreator.createProductToBeSaved().getValue());
+                ProductCreator.createProductToBeSaved().getValueProduct());
     }
 }
 

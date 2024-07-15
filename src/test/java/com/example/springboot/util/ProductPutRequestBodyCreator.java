@@ -7,7 +7,7 @@ public class ProductPutRequestBodyCreator {
         return new ProductPutRequestBody(
                 ProductCreator.createValidUpdateProduct().getIdProduct().toString(),
                 ProductCreator.createValidUpdateProduct().getName(),
-                ProductCreator.createValidUpdateProduct().getValue());
+                ProductCreator.createValidUpdateProduct().getValueProduct());
     }
 }
 

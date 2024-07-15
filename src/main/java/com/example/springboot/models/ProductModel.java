@@ -23,6 +23,6 @@ public class ProductModel extends RepresentationModel<ProductModel> implements S
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID idProduct;
     private String name;
-    private BigDecimal value;
+    private BigDecimal valueProduct;
 
 }

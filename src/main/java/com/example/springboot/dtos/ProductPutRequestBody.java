@@ -12,5 +12,5 @@ public record ProductPutRequestBody(
         @NotBlank @NotEmpty
         String name,
         @NotNull
-        BigDecimal value) {
+        BigDecimal valueProduct) {
 }

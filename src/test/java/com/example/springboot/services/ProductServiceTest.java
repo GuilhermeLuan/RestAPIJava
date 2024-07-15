@@ -58,7 +58,7 @@ class ProductServiceTest {
     void getAllProducts_ReturnsAllProducts_WhenSuccessful() {
         UUID expectedID = ProductCreator.createValidProduct().getIdProduct();
         String expectedName = ProductCreator.createValidProduct().getName();
-        BigDecimal expectedValue = ProductCreator.createValidProduct().getValue();
+        BigDecimal expectedValue = ProductCreator.createValidProduct().getValueProduct();
         List<ProductModel> products = productService.findAll();
 
         Assertions.assertThat(products)
@@ -68,7 +68,7 @@ class ProductServiceTest {
 
         Assertions.assertThat(products.get(0).getIdProduct()).isEqualTo(expectedID);
         Assertions.assertThat(products.get(0).getName()).isEqualTo(expectedName);
-        Assertions.assertThat(products.get(0).getValue()).isEqualTo(expectedValue);
+        Assertions.assertThat(products.get(0).getValueProduct()).isEqualTo(expectedValue);
     }
 
     @Test
@@ -89,14 +89,14 @@ class ProductServiceTest {
     void getOneProductById_ReturnsProduct_WhenSuccessful() {
         UUID expectedId = ProductCreator.createValidProduct().getIdProduct();
         String expectedName = ProductCreator.createValidProduct().getName();
-        BigDecimal expectedValue = ProductCreator.createValidProduct().getValue();
+        BigDecimal expectedValue = ProductCreator.createValidProduct().getValueProduct();
         ProductModel productModel = productService.findByIdOrThrowBadRequestException(UUID.fromString("6f403211-288c-4188-867b-aa2ee769da8c"));
 
         Assertions.assertThat(productModel).isNotNull();
 
         Assertions.assertThat(productModel.getIdProduct()).isNotNull().isEqualTo(expectedId);
         Assertions.assertThat(productModel.getName()).isNotNull().isEqualTo(expectedName);
-        Assertions.assertThat(productModel.getValue()).isEqualTo(expectedValue);
+        Assertions.assertThat(productModel.getValueProduct()).isEqualTo(expectedValue);
 
     }
 
@@ -119,13 +119,13 @@ class ProductServiceTest {
 
         UUID expectedId = ProductCreator.createValidUpdateProduct().getIdProduct();
         String expectedName = ProductCreator.createValidUpdateProduct().getName();
-        BigDecimal expectedValue = ProductCreator.createValidUpdateProduct().getValue();
+        BigDecimal expectedValue = ProductCreator.createValidUpdateProduct().getValueProduct();
 
         ProductModel productModel = productService.update(ProductPutRequestBodyCreator.createPutRequestBody());
 
         Assertions.assertThat(productModel.getIdProduct()).isNotNull().isEqualTo(expectedId);
         Assertions.assertThat(productModel.getName()).isNotNull().isEqualTo(expectedName);
-        Assertions.assertThat(productModel.getValue()).isEqualTo(expectedValue);
+        Assertions.assertThat(productModel.getValueProduct()).isEqualTo(expectedValue);
     }
 
     @Test
