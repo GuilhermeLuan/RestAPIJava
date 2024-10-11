@@ -9,7 +9,7 @@ public class ProductCreator {
     public static ProductModel createProductToBeSaved() {
         return ProductModel.builder()
                 .name("Iphone 15")
-                .valueProduct(BigDecimal.valueOf(5000.99))
+                .valueProduct(BigDecimal.valueOf(5400.77))
                 .build();
     }
 
