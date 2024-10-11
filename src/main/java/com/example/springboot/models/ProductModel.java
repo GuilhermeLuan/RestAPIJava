@@ -11,6 +11,8 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 
 @Entity
 @Builder
@@ -21,6 +23,7 @@ public class ProductModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @EqualsAndHashCode.Include
     private UUID idProduct;
     private String name;
     private BigDecimal valueProduct;
