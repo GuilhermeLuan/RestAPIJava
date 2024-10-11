@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: RestAPIJava
+  datasource:
+    url: jdbc:postgresql://localhost:5000/products-api
+    password: secret
+    username: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+logging:
+  level:
+    academy.devdojo: debug
+server:
+  servlet:
+    context-path: /
+  error:
+    include-stacktrace: on_param
+  tomcat:
+    threads:
+      max: 20
+
+  threads:
+    virtual:
+      enabled: true
