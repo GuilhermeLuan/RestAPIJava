@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/v1/products")
 public class ProductController implements Serializable, ProductAPI {
     private final transient ProductService productService;
 
@@ -21,36 +22,33 @@ public class ProductController implements Serializable, ProductAPI {
         this.productService = productService;
     }
 
-    @PostMapping("/products")
+    @PostMapping
     public ResponseEntity<ProductModel> saveProduct(@RequestBody @Valid ProductPostRequestBody productPostRequestBody) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.insert(productPostRequestBody));
     }
 
 
-    @GetMapping("/products")
+    @GetMapping
     public ResponseEntity<List<ProductModel>> getAllProducts() {
         List<ProductModel> list = productService.findAll();
-        for (ProductModel productModel : list) {
-            UUID id = productModel.getIdProduct();
-        }
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @Override
-    @GetMapping("/products/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ProductModel> getOneProduct(@PathVariable UUID id) {
         ProductModel product = productService.findByIdOrThrowBadRequestException(id);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @Override
-    @PutMapping("/products")
+    @PutMapping
     public ResponseEntity<ProductModel> updateProduct(@RequestBody @Valid ProductPutRequestBody productPutRequestBody) {
         return new ResponseEntity<>(productService.update(productPutRequestBody), HttpStatus.OK);
     }
 
     @Override
-    @DeleteMapping("/products/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
         productService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
