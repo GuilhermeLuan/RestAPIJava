@@ -15,8 +15,9 @@
 <h2 id="technologies">💻 Technologies</h2>
 
 - Java
-- PostgreSQL
+- PostgresSQL
 - Spring Boot
+- JPA
 - JUnit 5
 - Docker
 
@@ -45,13 +46,13 @@ docker compose up
 
 <h2 id="routes">📍 API Endpoints</h2>
 
-| route                                  | description                                                          |
-|----------------------------------------|----------------------------------------------------------------------|
-| <kbd>GET /api/products </kbd>          | retrieves a list of all products.                                    |
-| <kbd>GET /api/products/{UUID} </kbd>   | retrieves a specific product by its unique identifier (UUID).        |
-| <kbd>PUT /api/products</kbd>           | modifies a specific product by its unique identifier on body (UUID). |
-| <kbd>POST /api/products</kbd>          | creates a product in the database.                                   |
-| <kbd>DELETE /api/products/{UUID}</kbd> | deletes a specific product by its unique identifier (UUID).          |
+| route                                     | description                                                          |
+|-------------------------------------------|----------------------------------------------------------------------|
+| <kbd>GET /api/v1/products </kbd>          | retrieves a list of all products.                                    |
+| <kbd>GET /api/v1/products/{UUID} </kbd>   | retrieves a specific product by its unique identifier (UUID).        |
+| <kbd>PUT /api/v1/products</kbd>           | modifies a specific product by its unique identifier on body (UUID). |
+| <kbd>POST /api/v1/products</kbd>          | creates a product in the database.                                   |
+| <kbd>DELETE /api/v1/products/{UUID}</kbd> | deletes a specific product by its unique identifier (UUID).          |
 
 <h3 id="get-auth-detail">GET /api/products</h3>
 
@@ -59,15 +60,9 @@ docker compose up
 ```json
 [
   {
-    "idProduct": "2de63670-64b8-4333-9365-30b980cc3f16",
-    "name": "Iphone 14 PRO",
-    "value": 7900.00,
-    "links": [
-      {
-        "rel": "self",
-        "href": "http://localhost:8080/products/2de63670-64b8-4333-9365-30b980cc3f16"
-      }
-    ]
+    "idProduct": "ee2737a5-d773-4106-ab60-c3ffbe95ec0e",
+    "name": "Iphone 14 Pro",
+    "valueProduct": 5000
   }
 ]
 ```
@@ -78,15 +73,9 @@ docker compose up
 ```json
 [
   {
-    "idProduct": "2de63670-64b8-4333-9365-30b980cc3f16",
-    "name": "Iphone 14 PRO",
-    "value": 7900.00,
-    "links": [
-      {
-        "rel": "self",
-        "href": "http://localhost:8080/products/2de63670-64b8-4333-9365-30b980cc3f16"
-      }
-    ]
+    "idProduct": "ee2737a5-d773-4106-ab60-c3ffbe95ec0e",
+    "name": "Iphone 14 Pro",
+    "valueProduct": 5000
   }
 ]
 ```
@@ -97,18 +86,18 @@ docker compose up
 **REQUEST**
 ```json
 {
-  "idProduct": "2de63670-64b8-4333-9365-30b980cc3f16",
-  "name": "Iphone 14 PRO Red",
-  "value": 7900
+  "idProduct": "ee2737a5-d773-4106-ab60-c3ffbe95ec0e",
+  "name": "Iphone 14 Pro",
+  "valueProduct": 5000
 }
 ```
 
 **RESPONSE**
 ```json
 {
-  "idProduct": "2de63670-64b8-4333-9365-30b980cc3f16",
-  "name": "Iphone 14 PRO Red",
-  "value": 7900
+  "idProduct": "ee2737a5-d773-4106-ab60-c3ffbe95ec0e",
+  "name": "Iphone 14 Pro",
+  "valueProduct": 5000
 }
 ```
 
@@ -119,16 +108,16 @@ docker compose up
 ```json
 {
   "name": "Iphone 14",
-  "value": 5000
+  "valueProduct": 5000
 }
 ```
 
 **RESPONSE**
 ```json
 {
-  "idProduct": "2de63670-64b8-4333-9365-30b980cc3f16",
+  "idProduct": "ee2737a5-d773-4106-ab60-c3ffbe95ec0e",
   "name": "Iphone 14",
-  "value": 5000
+  "valueProduct": 5000
 }
 ```
 
