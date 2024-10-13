@@ -5,6 +5,7 @@ import com.example.springboot.dtos.ProductPutRequestBody;
 import com.example.springboot.models.ProductModel;
 import com.example.springboot.services.ProductService;
 import jakarta.validation.Valid;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,14 +30,14 @@ public class ProductController implements Serializable, ProductAPI {
 
 
     @GetMapping
-    public ResponseEntity<List<ProductModel>> getAllProducts() {
-        List<ProductModel> list = productService.findAll();
+    public ResponseEntity<List<ProductModel>> findAll(@RequestParam(required = false) String productName) {
+        List<ProductModel> list = productService.findAll(productName);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @Override
     @GetMapping("/{id}")
-    public ResponseEntity<ProductModel> getOneProduct(@PathVariable UUID id) {
+    public ResponseEntity<ProductModel> findById(@PathVariable UUID id) {
         ProductModel product = productService.findByIdOrThrowBadRequestException(id);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }

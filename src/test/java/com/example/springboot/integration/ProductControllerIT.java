@@ -52,7 +52,7 @@ class ProductControllerIT {
 
     @Test
     @DisplayName("getAllProducts returns a list of all products when successful")
-    void getAllProducts_ReturnsAllProducts_WhenSuccessful() {
+    void findAllProducts_ReturnsAll_WhenSuccessful() {
         ProductModel productSaved = productRepository.save(ProductCreator.createProductToBeSaved());
 
         UUID expectedID = productSaved.getIdProduct();
@@ -75,7 +75,7 @@ class ProductControllerIT {
 
     @Test
     @DisplayName("getAllProducts returns empty list when there is no product ")
-    void getAllProducts_ReturnsAnEmptyList_WhenThereIsNoProduct() {
+    void findAll_ReturnsAnEmptyList_WhenThereIsNoProduct() {
         List<ProductModel> products = testRestTemplate.exchange(url, HttpMethod.GET, null,
                 new ParameterizedTypeReference<List<ProductModel>>() {
                 }).getBody();
@@ -87,7 +87,7 @@ class ProductControllerIT {
 
     @Test
     @DisplayName("getOneProductById returns product when successful")
-    void getOneProductById_ReturnsProduct_WhenSuccessful() {
+    void findById_WhenSuccessful() {
         ProductModel productSaved = productRepository.save(ProductCreator.createProductToBeSaved());
 
         UUID expectedID = productSaved.getIdProduct();
@@ -106,7 +106,7 @@ class ProductControllerIT {
 
     @Test
     @DisplayName("getOneProduct returns bad request when unsuccessful")
-    void getOneProductById_ReturnsBadRequest_WhenUnsuccessful() {
+    void findByIdById_ReturnsBadRequest_WhenUnsuccessful() {
 
 
         ResponseEntity<ProductModel> responseEntity = testRestTemplate.getForEntity(url + "/{id}", ProductModel.class, "1231");

@@ -33,12 +33,15 @@ class ProductControllerTest {
     @Mock
     private ProductService productServiceMock;
 
+    private String name = "Iphone 15";
     @BeforeEach
     void setUp() {
+
+
         BDDMockito.when(productServiceMock.insert(ArgumentMatchers.any(ProductPostRequestBody.class)))
                 .thenReturn(ProductCreator.createValidProduct());
 
-        BDDMockito.when(productServiceMock.findAll())
+        BDDMockito.when(productServiceMock.findAll(name))
                 .thenReturn(List.of(ProductCreator.createValidProduct()));
 
         BDDMockito.when(productServiceMock.findByIdOrThrowBadRequestException(ArgumentMatchers.any(UUID.class)))
@@ -61,11 +64,11 @@ class ProductControllerTest {
 
     @Test
     @DisplayName("getAllProducts returns a list of all products when successful")
-    void getAllProducts_ReturnsAllProducts_WhenSuccessful() {
+    void findAllProducts_ReturnsAll_WhenSuccessful() {
         UUID expectedID = ProductCreator.createValidProduct().getIdProduct();
         String expectedName = ProductCreator.createValidProduct().getName();
         BigDecimal expectedValue = ProductCreator.createValidProduct().getValueProduct();
-        List<ProductModel> products = productController.getAllProducts().getBody();
+        List<ProductModel> products = productController.findAll(name).getBody();
 
         Assertions.assertThat(products)
                 .isNotNull()
@@ -79,11 +82,11 @@ class ProductControllerTest {
 
     @Test
     @DisplayName("getAllProducts returns empty list when there is no product ")
-    void getAllProducts_ReturnsAnEmptyList_WhenThereIsNoProduct() {
-        BDDMockito.when(productServiceMock.findAll())
+    void findAll_ReturnsAnEmptyList_WhenThereIsNoProduct() {
+        BDDMockito.when(productServiceMock.findAll(name))
                 .thenReturn(Collections.emptyList());
 
-        List<ProductModel> products = productController.getAllProducts().getBody();
+        List<ProductModel> products = productController.findAll(name).getBody();
 
         Assertions.assertThat(products)
                 .isNotNull()
@@ -92,11 +95,11 @@ class ProductControllerTest {
 
     @Test
     @DisplayName("getOneProductById returns product when successful")
-    void getOneProductById_ReturnsProduct_WhenSuccessful() {
+    void findById_WhenSuccessful() {
         UUID expectedId = ProductCreator.createValidProduct().getIdProduct();
         String expectedName = ProductCreator.createValidProduct().getName();
         BigDecimal expectedValue = ProductCreator.createValidProduct().getValueProduct();
-        ProductModel productModel = productController.getOneProduct(UUID.fromString("6f403211-288c-4188-867b-aa2ee769da8c")).getBody();
+        ProductModel productModel = productController.findById(UUID.fromString("6f403211-288c-4188-867b-aa2ee769da8c")).getBody();
 
         Assertions.assertThat(productModel).isNotNull();
 
@@ -108,12 +111,12 @@ class ProductControllerTest {
 
     @Test
     @DisplayName("getOneProduct returns bad request when unsuccessful")
-    void getOneProductById_ReturnsBadRequest_WhenUnsuccessful() {
+    void findByIdById_ReturnsBadRequest_WhenUnsuccessful() {
         BDDMockito.when(productServiceMock.findByIdOrThrowBadRequestException(ArgumentMatchers.any()))
                 .thenThrow(BadRequestException.class);
 
         Assertions.assertThatThrownBy(() ->
-                        productController.getOneProduct(UUID.fromString("6f403211-288c-4188-867b-aa2ee769da8c"))
+                        productController.findById(UUID.fromString("6f403211-288c-4188-867b-aa2ee769da8c"))
                 )
                 .isInstanceOf(BadRequestException.class);
     }

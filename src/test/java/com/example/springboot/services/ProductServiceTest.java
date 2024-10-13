@@ -30,6 +30,8 @@ class ProductServiceTest {
     @Mock
     private ProductRepository productRepositoryMock;
 
+    private String name = "Iphone 15";
+
     @BeforeEach
     void setUp() {
         BDDMockito.when(productRepositoryMock.save(ArgumentMatchers.any(ProductModel.class)))
@@ -59,7 +61,7 @@ class ProductServiceTest {
         UUID expectedID = ProductCreator.createValidProduct().getIdProduct();
         String expectedName = ProductCreator.createValidProduct().getName();
         BigDecimal expectedValue = ProductCreator.createValidProduct().getValueProduct();
-        List<ProductModel> products = productService.findAll();
+        List<ProductModel> products = productService.findAll(null);
 
         Assertions.assertThat(products)
                 .isNotNull()
@@ -77,7 +79,7 @@ class ProductServiceTest {
         BDDMockito.when(productRepositoryMock.findAll())
                 .thenReturn(Collections.emptyList());
 
-        List<ProductModel> products = productService.findAll();
+        List<ProductModel> products = productService.findAll(name);
 
         Assertions.assertThat(products)
                 .isNotNull()

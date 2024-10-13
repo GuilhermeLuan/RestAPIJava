@@ -34,7 +34,7 @@ public interface ProductAPI {
             @ApiResponse(responseCode = "200", description = "Operação bem-sucedida"),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     })
-    ResponseEntity<List<ProductModel>> getAllProducts();
+    ResponseEntity<List<ProductModel>> findAll(@PathVariable String productName);
 
     @Operation(
             summary = "Busca um produto",
@@ -44,7 +44,7 @@ public interface ProductAPI {
             @ApiResponse(responseCode = "404", description = "Produto não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     })
-    ResponseEntity<ProductModel> getOneProduct(@PathVariable(value = "id") UUID id);
+    ResponseEntity<ProductModel> findById(@PathVariable(value = "id") UUID id);
 
     @Operation(
             summary = "Atualiza um produto",
