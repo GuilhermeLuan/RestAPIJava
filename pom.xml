@@ -17,8 +17,27 @@
 		<org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
 		<java-jwt.version>4.5.0</java-jwt.version>
 		<springdoc-openapi-starter-webmvc-ui.version>2.0.2</springdoc-openapi-starter-webmvc-ui.version>
+		<hamcrest.version>2.1</hamcrest.version>
+		<rest-assured.version>5.5.0</rest-assured.version>
+		<testcontainers.version>1.20.4</testcontainers.version>
+		<jib-maven-plugin.version>3.4.2</jib-maven-plugin.version>
+		<jib-maven-plugin.image>eclipse-temurin:21-jre</jib-maven-plugin.image>
+		<docker.repo.url>guilhermeluan</docker.repo.url>
+		<docker.repo.project>${artifactId}</docker.repo.project>
+		<docker.repo.name>${docker.repo.url}/${docker.repo.project}</docker.repo.name>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<version>${rest-assured.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest</artifactId>
+			<version>${hamcrest.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
@@ -95,10 +114,40 @@
 			<artifactId>java-jwt</artifactId>
 			<version>${java-jwt.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers</artifactId>
+			<version>${testcontainers.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<version>${jib-maven-plugin.version}</version>
+				<configuration>
+					<from>
+						<image>${jib-maven-plugin.image}</image>
+					</from>
+					<to>
+						<image>${docker.repo.name}</image>
+						<tags>
+							<tag>${project.version}</tag>
+						</tags>
+					</to>
+					<container>
+						<format>OCI</format>
+					</container>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
