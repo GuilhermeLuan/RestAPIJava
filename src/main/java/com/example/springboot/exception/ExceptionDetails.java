@@ -1,4 +1,4 @@
-package com.example.springboot.Exception;
+package com.example.springboot.exception;
 
 import lombok.Data;
 import lombok.experimental.SuperBuilder;

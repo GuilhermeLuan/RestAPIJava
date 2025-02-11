@@ -1,6 +1,6 @@
 package com.example.springboot.util;
 
-import com.example.springboot.models.ProductModel;
+import com.example.springboot.models.product.ProductModel;
 
 import java.math.BigDecimal;
 import java.util.UUID;

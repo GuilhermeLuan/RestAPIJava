@@ -1,7 +1,7 @@
 package com.example.springboot.integration;
 
 import com.example.springboot.dtos.ProductPostRequestBody;
-import com.example.springboot.models.ProductModel;
+import com.example.springboot.models.product.ProductModel;
 import com.example.springboot.repositories.ProductRepository;
 import com.example.springboot.util.ProductCreator;
 import com.example.springboot.util.ProductPostRequestBodyCreator;
@@ -34,13 +34,13 @@ class ProductControllerIT {
     @Autowired
     private TestRestTemplate testRestTemplate;
 
-    private String url = "/v1/products";
+    private final String URL = "/v1/products";
 
     @Test
     @DisplayName("saveProduct returns product when successful")
     void saveProduct_ReturnsProduct_WhenSuccessful() {
         ProductPostRequestBody productPostRequestBody = ProductPostRequestBodyCreator.createProductPostRequestBody();
-        ResponseEntity<ProductModel> productResponseEntity = testRestTemplate.postForEntity(url, productPostRequestBody, ProductModel.class);
+        ResponseEntity<ProductModel> productResponseEntity = testRestTemplate.postForEntity(URL, productPostRequestBody, ProductModel.class);
 
         Assertions.assertThat(productResponseEntity).isNotNull();
         Assertions.assertThat(productResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -59,7 +59,7 @@ class ProductControllerIT {
         String expectedName = productSaved.getName();
         BigDecimal expectedValue = productSaved.getValueProduct();
 
-        List<ProductModel> products = testRestTemplate.exchange(url, HttpMethod.GET, null,
+        List<ProductModel> products = testRestTemplate.exchange(URL, HttpMethod.GET, null,
                 new ParameterizedTypeReference<List<ProductModel>>() {
                 }).getBody();
 
@@ -76,7 +76,7 @@ class ProductControllerIT {
     @Test
     @DisplayName("getAllProducts returns empty list when there is no product ")
     void getAllProducts_ReturnsAnEmptyList_WhenThereIsNoProduct() {
-        List<ProductModel> products = testRestTemplate.exchange(url, HttpMethod.GET, null,
+        List<ProductModel> products = testRestTemplate.exchange(URL, HttpMethod.GET, null,
                 new ParameterizedTypeReference<List<ProductModel>>() {
                 }).getBody();
 
@@ -94,7 +94,7 @@ class ProductControllerIT {
         String expectedName = productSaved.getName();
         BigDecimal expectedValue = productSaved.getValueProduct();
 
-        ProductModel productModel = testRestTemplate.getForObject(url + "/{id}", ProductModel.class, expectedID);
+        ProductModel productModel = testRestTemplate.getForObject(URL + "/{id}", ProductModel.class, expectedID);
 
         Assertions.assertThat(productModel).isNotNull();
 
@@ -109,7 +109,7 @@ class ProductControllerIT {
     void getOneProductById_ReturnsBadRequest_WhenUnsuccessful() {
 
 
-        ResponseEntity<ProductModel> responseEntity = testRestTemplate.getForEntity(url + "/{id}", ProductModel.class, "1231");
+        ResponseEntity<ProductModel> responseEntity = testRestTemplate.getForEntity(URL + "/{id}", ProductModel.class, "1231");
 
         Assertions.assertThat(responseEntity).isNotNull();
         Assertions.assertThat(responseEntity.getBody()).isNotNull();
@@ -126,7 +126,7 @@ class ProductControllerIT {
         productSaved.setName(savedName);
         BigDecimal expectedValue = productSaved.getValueProduct();
 
-        ResponseEntity<ProductModel> productModel = testRestTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(productSaved), ProductModel.class);
+        ResponseEntity<ProductModel> productModel = testRestTemplate.exchange(URL, HttpMethod.PUT, new HttpEntity<>(productSaved), ProductModel.class);
 
         Assertions.assertThat(productModel).isNotNull();
         Assertions.assertThat(productModel.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -142,7 +142,7 @@ class ProductControllerIT {
     void deleteProduct_RemovesProduct_WhenSuccessful() {
         ProductModel productSaved = productRepository.save(ProductCreator.createProductToBeSaved());
 
-        ResponseEntity<Void> productModel = testRestTemplate.exchange(url + "/{id}", HttpMethod.DELETE, null, Void.class, productSaved.getIdProduct());
+        ResponseEntity<Void> productModel = testRestTemplate.exchange(URL + "/{id}", HttpMethod.DELETE, null, Void.class, productSaved.getIdProduct());
 
         Assertions.assertThat(productModel).isNotNull();
         Assertions.assertThat(productModel.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
@@ -151,7 +151,7 @@ class ProductControllerIT {
     @Test
     @DisplayName("deletes returns bad request when unsuccessful")
     void deleteProduct_ReturnsBadRequest_WhenUnsuccessful() {
-        ResponseEntity<Void> productModel = testRestTemplate.exchange(url + "/{id}", HttpMethod.DELETE, null, Void.class, "123");
+        ResponseEntity<Void> productModel = testRestTemplate.exchange(URL + "/{id}", HttpMethod.DELETE, null, Void.class, "123");
 
         Assertions.assertThat(productModel).isNotNull();
         Assertions.assertThat(productModel.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);

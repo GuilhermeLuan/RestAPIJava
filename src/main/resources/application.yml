@@ -10,6 +10,11 @@ spring:
       ddl-auto: update
     show-sql: true
 
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET:my-secret-key}
+
 logging:
   level:
     academy.devdojo: debug

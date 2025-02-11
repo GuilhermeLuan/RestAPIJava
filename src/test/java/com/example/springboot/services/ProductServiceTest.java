@@ -1,7 +1,7 @@
 package com.example.springboot.services;
 
-import com.example.springboot.Exception.BadRequestException;
-import com.example.springboot.models.ProductModel;
+import com.example.springboot.exception.BadRequestException;
+import com.example.springboot.models.product.ProductModel;
 import com.example.springboot.repositories.ProductRepository;
 import com.example.springboot.util.ProductCreator;
 import com.example.springboot.util.ProductPostRequestBodyCreator;

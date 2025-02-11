@@ -1,10 +1,10 @@
 package com.example.springboot.services;
 
-import com.example.springboot.Exception.BadRequestException;
-import com.example.springboot.dtos.ProductPutRequestBody;
 import com.example.springboot.dtos.ProductPostRequestBody;
+import com.example.springboot.dtos.ProductPutRequestBody;
+import com.example.springboot.exception.BadRequestException;
 import com.example.springboot.mapper.ProductMapper;
-import com.example.springboot.models.ProductModel;
+import com.example.springboot.models.product.ProductModel;
 import com.example.springboot.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +26,7 @@ public class ProductService implements Serializable {
         this.productRepository = productRepository;
     }
 
-    public List<ProductModel> findAll(){
+    public List<ProductModel> findAll() {
         return productRepository.findAll();
     }
 
@@ -36,16 +36,16 @@ public class ProductService implements Serializable {
         return productRepository.save(productModel);
     }
 
-    public ProductModel findByIdOrThrowBadRequestException(UUID id){
+    public ProductModel findByIdOrThrowBadRequestException(UUID id) {
         return productRepository.findById(id).
                 orElseThrow(() -> new BadRequestException("Product not found"));
     }
 
-    public void deleteById(UUID id){
+    public void deleteById(UUID id) {
         productRepository.deleteById(findByIdOrThrowBadRequestException(id).getIdProduct());
     }
 
-    public ProductModel update(ProductPutRequestBody productPutRequestBody){
+    public ProductModel update(ProductPutRequestBody productPutRequestBody) {
         ProductModel productSaved = findByIdOrThrowBadRequestException(UUID.fromString(productPutRequestBody.idProduct()));
         ProductModel productModel = ProductMapper.INSTANCE.toProduct(productPutRequestBody);
         productModel.setIdProduct(productSaved.getIdProduct());

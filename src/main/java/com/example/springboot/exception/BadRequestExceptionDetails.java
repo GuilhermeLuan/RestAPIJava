@@ -1,9 +1,7 @@
-package com.example.springboot.Exception;
+package com.example.springboot.exception;
 
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Getter
 @SuperBuilder
