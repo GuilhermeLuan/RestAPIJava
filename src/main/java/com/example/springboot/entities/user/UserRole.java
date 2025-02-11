@@ -1,4 +1,4 @@
-package com.example.springboot.models.user;
+package com.example.springboot.entities.user;
 
 public enum UserRole {
     ADMIN("admin"),

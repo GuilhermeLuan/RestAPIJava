@@ -1,6 +1,6 @@
 package com.example.springboot.util;
 
-import com.example.springboot.dtos.ProductPostRequestBody;
+import com.example.springboot.entities.product.ProductPostRequestBody;
 
 public class ProductPostRequestBodyCreator {
     public static ProductPostRequestBody createProductPostRequestBody() {

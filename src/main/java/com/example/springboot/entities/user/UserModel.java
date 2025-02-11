@@ -1,4 +1,4 @@
-package com.example.springboot.models.user;
+package com.example.springboot.entities.user;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,6 +12,7 @@ import java.util.List;
 @Table(name = "TB_USERS")
 @Entity
 
+@Builder
 @Getter
 @Setter
 @NoArgsConstructor

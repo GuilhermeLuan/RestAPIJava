@@ -1,8 +1,8 @@
 package com.example.springboot.controllers;
 
-import com.example.springboot.dtos.ProductPostRequestBody;
-import com.example.springboot.dtos.ProductPutRequestBody;
-import com.example.springboot.models.product.ProductModel;
+import com.example.springboot.entities.product.ProductPostRequestBody;
+import com.example.springboot.entities.product.ProductPutRequestBody;
+import com.example.springboot.entities.product.ProductModel;
 import com.example.springboot.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

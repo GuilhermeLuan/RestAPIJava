@@ -1,11 +1,17 @@
 package com.example.springboot.integration;
 
-import com.example.springboot.dtos.ProductPostRequestBody;
-import com.example.springboot.models.product.ProductModel;
+import com.example.springboot.entities.product.ProductPostRequestBody;
+import com.example.springboot.entities.product.ProductModel;
+import com.example.springboot.entities.user.AuthenticationDTO;
+import com.example.springboot.entities.user.LoginResponseDTO;
+import com.example.springboot.entities.user.RegisterDTO;
 import com.example.springboot.repositories.ProductRepository;
 import com.example.springboot.util.ProductCreator;
 import com.example.springboot.util.ProductPostRequestBodyCreator;
+import com.example.springboot.util.UserPostRequestBodyCreator;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,21 +19,21 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
+@Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@ActiveProfiles("test")
+@ActiveProfiles("ittest")
+//@Import(TestcontainersConfiguration.class)
 class ProductControllerIT {
     @Autowired
     private ProductRepository productRepository;
@@ -35,12 +41,38 @@ class ProductControllerIT {
     private TestRestTemplate testRestTemplate;
 
     private final String URL = "/v1/products";
+    private String jwtToken;
+
+    @BeforeEach()
+    void setUpBearerToken() {
+        RegisterDTO userRegisterBody = UserPostRequestBodyCreator.createUserWithRoleAdminPostRequestBody();
+        AuthenticationDTO userLoginBody = new AuthenticationDTO(userRegisterBody.login(), userRegisterBody.password());
+
+        testRestTemplate.postForEntity("/auth/register", userRegisterBody, RegisterDTO.class);
+
+        ResponseEntity<LoginResponseDTO> login = testRestTemplate.postForEntity("/auth/login", userLoginBody, LoginResponseDTO.class);
+
+        jwtToken = Objects.requireNonNull(login.getBody()).token();
+    }
 
     @Test
     @DisplayName("saveProduct returns product when successful")
     void saveProduct_ReturnsProduct_WhenSuccessful() {
         ProductPostRequestBody productPostRequestBody = ProductPostRequestBodyCreator.createProductPostRequestBody();
-        ResponseEntity<ProductModel> productResponseEntity = testRestTemplate.postForEntity(URL, productPostRequestBody, ProductModel.class);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + jwtToken);
+
+        HttpEntity<ProductPostRequestBody> requestEntity =
+                new HttpEntity<>(productPostRequestBody, headers);
+
+        ResponseEntity<ProductModel> productResponseEntity =
+                testRestTemplate.exchange(
+                        URL,
+                        HttpMethod.POST,
+                        requestEntity,
+                        ProductModel.class
+                );
 
         Assertions.assertThat(productResponseEntity).isNotNull();
         Assertions.assertThat(productResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -156,6 +188,4 @@ class ProductControllerIT {
         Assertions.assertThat(productModel).isNotNull();
         Assertions.assertThat(productModel.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
-
-
 }

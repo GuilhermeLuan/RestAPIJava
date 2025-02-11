@@ -1,10 +1,10 @@
 package com.example.springboot.controllers;
 
 import com.example.springboot.infra.security.TokenService;
-import com.example.springboot.models.user.AuthenticationDTO;
-import com.example.springboot.models.user.LoginResponseDTO;
-import com.example.springboot.models.user.RegisterDTO;
-import com.example.springboot.models.user.UserModel;
+import com.example.springboot.entities.user.AuthenticationDTO;
+import com.example.springboot.entities.user.LoginResponseDTO;
+import com.example.springboot.entities.user.RegisterDTO;
+import com.example.springboot.entities.user.UserModel;
 import com.example.springboot.repositories.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

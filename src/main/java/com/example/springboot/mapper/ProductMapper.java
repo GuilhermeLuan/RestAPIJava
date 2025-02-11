@@ -1,8 +1,8 @@
 package com.example.springboot.mapper;
 
-import com.example.springboot.dtos.ProductPostRequestBody;
-import com.example.springboot.dtos.ProductPutRequestBody;
-import com.example.springboot.models.product.ProductModel;
+import com.example.springboot.entities.product.ProductPostRequestBody;
+import com.example.springboot.entities.product.ProductPutRequestBody;
+import com.example.springboot.entities.product.ProductModel;
 import org.mapstruct.factory.Mappers;
 
 @org.mapstruct.Mapper(componentModel = "spring")

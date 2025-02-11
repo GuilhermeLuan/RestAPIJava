@@ -1,4 +1,4 @@
-package com.example.springboot.models.product;
+package com.example.springboot.entities.product;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,6 +1,6 @@
 package com.example.springboot.repositories;
 
-import com.example.springboot.models.user.UserModel;
+import com.example.springboot.entities.user.UserModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 

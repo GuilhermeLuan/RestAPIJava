@@ -1,8 +1,8 @@
 package com.example.springboot.controllers;
 
-import com.example.springboot.dtos.ProductPostRequestBody;
-import com.example.springboot.dtos.ProductPutRequestBody;
-import com.example.springboot.models.product.ProductModel;
+import com.example.springboot.entities.product.ProductPostRequestBody;
+import com.example.springboot.entities.product.ProductPutRequestBody;
+import com.example.springboot.entities.product.ProductModel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

@@ -25,6 +25,7 @@
 		<docker.repo.url>guilhermeluan</docker.repo.url>
 		<docker.repo.project>${artifactId}</docker.repo.project>
 		<docker.repo.name>${docker.repo.url}/${docker.repo.project}</docker.repo.name>
+		<flyway-core.version>10.15.2</flyway-core.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -124,6 +125,15 @@
 			<groupId>org.testcontainers</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-database-postgresql</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+			<version>${flyway-core.version}</version>
 		</dependency>
 	</dependencies>
 

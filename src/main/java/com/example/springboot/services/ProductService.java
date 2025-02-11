@@ -1,10 +1,10 @@
 package com.example.springboot.services;
 
-import com.example.springboot.dtos.ProductPostRequestBody;
-import com.example.springboot.dtos.ProductPutRequestBody;
+import com.example.springboot.entities.product.ProductPostRequestBody;
+import com.example.springboot.entities.product.ProductPutRequestBody;
 import com.example.springboot.exception.BadRequestException;
 import com.example.springboot.mapper.ProductMapper;
-import com.example.springboot.models.product.ProductModel;
+import com.example.springboot.entities.product.ProductModel;
 import com.example.springboot.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
