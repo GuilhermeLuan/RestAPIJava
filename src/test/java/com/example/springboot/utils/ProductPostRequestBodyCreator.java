@@ -1,4 +1,4 @@
-package com.example.springboot.util;
+package com.example.springboot.utils;
 
 import com.example.springboot.entities.product.ProductPostRequestBody;
 

@@ -1,17 +1,10 @@
 spring:
   application:
-    name: loja-veiculos
-  datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;
-    password: sa
-    username:
-    driver-class-name: org.h2.Driver
-
+    name: RestAPIJava
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none
     show-sql: true
-
 api:
   security:
     token:
@@ -19,7 +12,7 @@ api:
 
 logging:
   level:
-    academy.devdojo: debug
+    com.example.springboot: debug
 server:
   servlet:
     context-path: /
@@ -28,7 +21,3 @@ server:
   tomcat:
     threads:
       max: 20
-
-  threads:
-    virtual:
-      enabled: true

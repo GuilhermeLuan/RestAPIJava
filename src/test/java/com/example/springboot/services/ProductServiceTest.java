@@ -3,11 +3,10 @@ package com.example.springboot.services;
 import com.example.springboot.exception.BadRequestException;
 import com.example.springboot.entities.product.ProductModel;
 import com.example.springboot.repositories.ProductRepository;
-import com.example.springboot.util.ProductCreator;
-import com.example.springboot.util.ProductPostRequestBodyCreator;
-import com.example.springboot.util.ProductPutRequestBodyCreator;
+import com.example.springboot.utils.ProductCreator;
+import com.example.springboot.utils.ProductPostRequestBodyCreator;
+import com.example.springboot.utils.ProductPutRequestBodyCreator;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,32 +29,25 @@ class ProductServiceTest {
     @Mock
     private ProductRepository productRepositoryMock;
 
-    @BeforeEach
-    void setUp() {
-        BDDMockito.when(productRepositoryMock.save(ArgumentMatchers.any(ProductModel.class)))
-                .thenReturn(ProductCreator.createValidProduct());
-
-        BDDMockito.when(productRepositoryMock.findAll())
-                .thenReturn(List.of(ProductCreator.createValidProduct()));
-
-        BDDMockito.when(productRepositoryMock.findById(ArgumentMatchers.any(UUID.class)))
-                .thenReturn(Optional.of(ProductCreator.createValidProduct()));
-
-
-        BDDMockito.doNothing().when(productRepositoryMock).deleteById(ArgumentMatchers.any(UUID.class));
-    }
-
     @Test
     @DisplayName("saveProduct returns product when successful")
     void saveProduct_ReturnsProduct_WhenSuccessful() {
+        ProductModel expectedProduct = ProductCreator.createValidProduct();
+
+        BDDMockito.when(productRepositoryMock.save(ArgumentMatchers.any(ProductModel.class)))
+                .thenReturn(expectedProduct);
+
         ProductModel productModel = productService.insert(ProductPostRequestBodyCreator.createProductPostRequestBody());
 
-        Assertions.assertThat(productModel).isNotNull().isEqualTo(ProductCreator.createValidProduct());
+        Assertions.assertThat(productModel).isNotNull().isEqualTo(expectedProduct);
     }
 
     @Test
     @DisplayName("getAllProducts returns a list of all products when successful")
     void getAllProducts_ReturnsAllProducts_WhenSuccessful() {
+        BDDMockito.when(productRepositoryMock.findAll())
+                .thenReturn(List.of(ProductCreator.createValidProduct()));
+
         UUID expectedID = ProductCreator.createValidProduct().getIdProduct();
         String expectedName = ProductCreator.createValidProduct().getName();
         BigDecimal expectedValue = ProductCreator.createValidProduct().getValueProduct();
@@ -87,6 +79,9 @@ class ProductServiceTest {
     @Test
     @DisplayName("getOneProductById returns product when successful")
     void getOneProductById_ReturnsProduct_WhenSuccessful() {
+        BDDMockito.when(productRepositoryMock.findById(ArgumentMatchers.any(UUID.class)))
+                .thenReturn(Optional.of(ProductCreator.createValidProduct()));
+
         UUID expectedId = ProductCreator.createValidProduct().getIdProduct();
         String expectedName = ProductCreator.createValidProduct().getName();
         BigDecimal expectedValue = ProductCreator.createValidProduct().getValueProduct();
@@ -115,6 +110,13 @@ class ProductServiceTest {
     @Test
     @DisplayName("updates anime when successful")
     void updateProduct_UpdatesProduct_WhenSuccessful() {
+
+        BDDMockito.when(productRepositoryMock.save(ArgumentMatchers.any(ProductModel.class)))
+                .thenReturn(ProductCreator.createValidProduct());
+
+        BDDMockito.when(productRepositoryMock.findById(ArgumentMatchers.any(UUID.class)))
+                .thenReturn(Optional.of(ProductCreator.createValidProduct()));
+
         Assertions.assertThatCode(ProductPutRequestBodyCreator::createPutRequestBody).doesNotThrowAnyException();
 
         UUID expectedId = ProductCreator.createValidUpdateProduct().getIdProduct();
@@ -143,13 +145,16 @@ class ProductServiceTest {
     @Test
     @DisplayName("deletes removes product when successful")
     void deleteProduct_RemovesProduct_WhenSuccessful() {
+        BDDMockito.when(productRepositoryMock.findById(ArgumentMatchers.any(UUID.class)))
+                .thenReturn(Optional.of(ProductCreator.createValidProduct()));
+        BDDMockito.doNothing().when(productRepositoryMock).deleteById(ArgumentMatchers.any(UUID.class));
+
         Assertions.assertThatCode(() -> productService.deleteById(UUID.fromString("6f403211-288c-4188-867b-aa2ee769da8c"))).doesNotThrowAnyException();
     }
 
     @Test
     @DisplayName("deletes returns bad request when unsuccessful")
     void deleteProduct_ReturnsBadRequest_WhenUnsuccessful() {
-
         BDDMockito.doThrow(BadRequestException.class).when(productRepositoryMock).deleteById(ArgumentMatchers.any(UUID.class));
 
 

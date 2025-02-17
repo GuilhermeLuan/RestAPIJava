@@ -1,191 +1,256 @@
 package com.example.springboot.integration;
 
-import com.example.springboot.entities.product.ProductPostRequestBody;
+import com.example.springboot.config.RestAssuredConfig;
+import com.example.springboot.config.TestcontainersConfiguration;
 import com.example.springboot.entities.product.ProductModel;
-import com.example.springboot.entities.user.AuthenticationDTO;
-import com.example.springboot.entities.user.LoginResponseDTO;
-import com.example.springboot.entities.user.RegisterDTO;
 import com.example.springboot.repositories.ProductRepository;
-import com.example.springboot.util.ProductCreator;
-import com.example.springboot.util.ProductPostRequestBodyCreator;
-import com.example.springboot.util.UserPostRequestBodyCreator;
+import com.example.springboot.utils.FileUtils;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
+import net.javacrumbs.jsonunit.core.Option;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
 @Slf4j
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureTestDatabase
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = RestAssuredConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("ittest")
-//@Import(TestcontainersConfiguration.class)
+@Import(TestcontainersConfiguration.class)
 class ProductControllerIT {
     @Autowired
-    private ProductRepository productRepository;
+    private FileUtils fileUtils;
     @Autowired
-    private TestRestTemplate testRestTemplate;
+    private ProductRepository productRepository;
 
-    private final String URL = "/v1/products";
-    private String jwtToken;
+    private final String URL_PRODUCTS = "/v1/products";
+    private final String URL_REGISTER = "/auth/register";
+    private final String URL_LOGIN = "/auth/login";
+    private static String jwtToken = "";
 
-    @BeforeEach()
-    void setUpBearerToken() {
-        RegisterDTO userRegisterBody = UserPostRequestBodyCreator.createUserWithRoleAdminPostRequestBody();
-        AuthenticationDTO userLoginBody = new AuthenticationDTO(userRegisterBody.login(), userRegisterBody.password());
+    @Autowired
+    @Qualifier(value = "requestSpecificationAdminUser")
+    public RequestSpecification requestSpecificationAdminUser;
 
-        testRestTemplate.postForEntity("/auth/register", userRegisterBody, RegisterDTO.class);
+    @BeforeEach
+    void setUp() {
+        RestAssured.requestSpecification = requestSpecificationAdminUser;
 
-        ResponseEntity<LoginResponseDTO> login = testRestTemplate.postForEntity("/auth/login", userLoginBody, LoginResponseDTO.class);
 
-        jwtToken = Objects.requireNonNull(login.getBody()).token();
+        String registerRequest = fileUtils.readResourceFile("users/post-user-register-request-200.json");
+        String loginRequest = fileUtils.readResourceFile("users/post-user-login-request-200.json");
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(registerRequest)
+                .when()
+                .post(URL_REGISTER)
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .log().all();
+
+        var generateToken = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(loginRequest)
+                .when()
+                .post(URL_LOGIN)
+                .jsonPath().get("token");
+
+        jwtToken = generateToken.toString();
+
     }
 
     @Test
-    @DisplayName("saveProduct returns product when successful")
+    @DisplayName("POST /v1/products saves product when successful")
     void saveProduct_ReturnsProduct_WhenSuccessful() {
-        ProductPostRequestBody productPostRequestBody = ProductPostRequestBodyCreator.createProductPostRequestBody();
+        String request = fileUtils.readResourceFile("products/request/post-product-201.json");
+        String expectedResponse = fileUtils.readResourceFile("products/response/post-product-201.json");
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + jwtToken);
+        String response = RestAssured.given()
+                .contentType(ContentType.JSON).accept(ContentType.JSON)
+                .header("Authorization", "Bearer " + jwtToken)
+                .body(request)
+                .when()
+                .post(URL_PRODUCTS)
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .log().all()
+                .extract().body().asString();
 
-        HttpEntity<ProductPostRequestBody> requestEntity =
-                new HttpEntity<>(productPostRequestBody, headers);
-
-        ResponseEntity<ProductModel> productResponseEntity =
-                testRestTemplate.exchange(
-                        URL,
-                        HttpMethod.POST,
-                        requestEntity,
-                        ProductModel.class
-                );
-
-        Assertions.assertThat(productResponseEntity).isNotNull();
-        Assertions.assertThat(productResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        Assertions.assertThat(productResponseEntity.getBody()).isNotNull();
-        Assertions.assertThat(productResponseEntity.getBody().getIdProduct()).isNotNull();
-        Assertions.assertThat(productResponseEntity.getBody().getName()).isNotNull().isNotEmpty();
-        Assertions.assertThat(productResponseEntity.getBody().getValueProduct()).isNotNull();
+        assertThatJson(response)
+                .whenIgnoringPaths("idProduct")
+                .isEqualTo(expectedResponse);
     }
 
     @Test
-    @DisplayName("getAllProducts returns a list of all products when successful")
+    @DisplayName("GET /v1/products returns a list of all products when successful")
+    @Sql(value = "/sql/init_three_products.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/clean_products.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void getAllProducts_ReturnsAllProducts_WhenSuccessful() {
-        ProductModel productSaved = productRepository.save(ProductCreator.createProductToBeSaved());
+        String expectedResponse = fileUtils.readResourceFile("products/response/get-products-200.json");
 
-        UUID expectedID = productSaved.getIdProduct();
-        String expectedName = productSaved.getName();
-        BigDecimal expectedValue = productSaved.getValueProduct();
+        String response = RestAssured.given()
+                .contentType(ContentType.JSON).accept(ContentType.JSON)
+                .header("Authorization", "Bearer " + jwtToken)
+                .when()
+                .get(URL_PRODUCTS)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .log().all()
+                .extract().body().asString();
 
-        List<ProductModel> products = testRestTemplate.exchange(URL, HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<ProductModel>>() {
-                }).getBody();
-
-        Assertions.assertThat(products)
-                .isNotNull()
-                .isNotEmpty()
-                .hasSize(1);
-
-        Assertions.assertThat(products.get(0).getIdProduct()).isEqualTo(expectedID);
-        Assertions.assertThat(products.get(0).getName()).isEqualTo(expectedName);
-        Assertions.assertThat(products.get(0).getValueProduct()).isEqualTo(expectedValue);
+        assertThatJson(response)
+                .when(Option.IGNORING_ARRAY_ORDER)
+                .whenIgnoringPaths("[*].idProduct")
+                .isEqualTo(expectedResponse);
     }
 
     @Test
-    @DisplayName("getAllProducts returns empty list when there is no product ")
+    @DisplayName("GET /v1/products returns empty list when there is no product ")
     void getAllProducts_ReturnsAnEmptyList_WhenThereIsNoProduct() {
-        List<ProductModel> products = testRestTemplate.exchange(URL, HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<ProductModel>>() {
-                }).getBody();
+        String expectedResponse = fileUtils.readResourceFile("products/response/get-product-empty-200.json");
 
-        Assertions.assertThat(products)
-                .isNotNull()
-                .isEmpty();
+        String response = RestAssured.given()
+                .contentType(ContentType.JSON).accept(ContentType.JSON)
+                .header("Authorization", "Bearer " + jwtToken)
+                .when()
+                .get(URL_PRODUCTS)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .log().all()
+                .extract().body().asString();
+
+        assertThatJson(response)
+                .when(Option.IGNORING_ARRAY_ORDER)
+                .isEqualTo(expectedResponse);
     }
 
+
     @Test
-    @DisplayName("getOneProductById returns product when successful")
+    @DisplayName("GET /v1/products/{id} returns product when successful")
+    @Sql(value = "/sql/init_three_products.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/clean_products.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void getOneProductById_ReturnsProduct_WhenSuccessful() {
-        ProductModel productSaved = productRepository.save(ProductCreator.createProductToBeSaved());
+        var expectedProduct = productRepository.findAll().get(0);
 
-        UUID expectedID = productSaved.getIdProduct();
-        String expectedName = productSaved.getName();
-        BigDecimal expectedValue = productSaved.getValueProduct();
+        String expectedResponse = fileUtils.readResourceFile("products/response/get-one-product-200.json");
 
-        ProductModel productModel = testRestTemplate.getForObject(URL + "/{id}", ProductModel.class, expectedID);
+        String response = RestAssured.given()
+                .contentType(ContentType.JSON).accept(ContentType.JSON)
+                .header("Authorization", "Bearer " + jwtToken)
+                .when()
+                .pathParam("id", expectedProduct.getIdProduct())
+                .get(URL_PRODUCTS + "/{id}")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .log().all()
+                .extract().body().asString();
 
-        Assertions.assertThat(productModel).isNotNull();
-
-        Assertions.assertThat(productModel.getIdProduct()).isNotNull().isEqualTo(expectedID);
-        Assertions.assertThat(productModel.getName()).isNotEmpty().isNotNull().isEqualTo(expectedName);
-        Assertions.assertThat(productModel.getValueProduct()).isEqualTo(expectedValue);
+        assertThatJson(response)
+                .when(Option.IGNORING_ARRAY_ORDER)
+                .whenIgnoringPaths("[*].idProduct")
+                .isEqualTo(expectedResponse);
 
     }
 
     @Test
-    @DisplayName("getOneProduct returns bad request when unsuccessful")
+    @DisplayName("GET /v1/products/{id} returns bad request when unsuccessful")
     void getOneProductById_ReturnsBadRequest_WhenUnsuccessful() {
+        String expectedResponse = fileUtils.readResourceFile("products/response/get-one-product-400.json");
 
+        var id = "946f70e7-34d4-403e-9421-76c223dc2505";
 
-        ResponseEntity<ProductModel> responseEntity = testRestTemplate.getForEntity(URL + "/{id}", ProductModel.class, "1231");
+        String response = RestAssured.given()
+                .contentType(ContentType.JSON).accept(ContentType.JSON)
+                .header("Authorization", "Bearer " + jwtToken)
+                .when()
+                .pathParam("id", id)
+                .get(URL_PRODUCTS + "/{id}")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .log().all()
+                .extract().body().asString();
 
-        Assertions.assertThat(responseEntity).isNotNull();
-        Assertions.assertThat(responseEntity.getBody()).isNotNull();
-        Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThatJson(response)
+                .isEqualTo(expectedResponse);
     }
 
     @Test
-    @DisplayName("updates anime when successful")
+    @DisplayName("PUT /v1/products returns OK when successful")
+    @Sql(value = "/sql/init_three_products.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/clean_products.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void updateProduct_UpdatesProduct_WhenSuccessful() {
-        ProductModel productSaved = productRepository.save(ProductCreator.createProductToBeSaved());
+        String request = fileUtils.readResourceFile("products/request/put-product-201.json");
 
-        UUID expectedID = productSaved.getIdProduct();
-        String savedName = "Test";
-        productSaved.setName(savedName);
-        BigDecimal expectedValue = productSaved.getValueProduct();
-
-        ResponseEntity<ProductModel> productModel = testRestTemplate.exchange(URL, HttpMethod.PUT, new HttpEntity<>(productSaved), ProductModel.class);
-
-        Assertions.assertThat(productModel).isNotNull();
-        Assertions.assertThat(productModel.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(productModel.getBody().getIdProduct()).isNotNull().isEqualTo(expectedID);
-        Assertions.assertThat(productModel.getBody().getName()).isNotEmpty().isNotNull().isEqualTo(savedName);
-        Assertions.assertThat(productModel.getBody().getValueProduct()).isEqualTo(expectedValue);
-
+        RestAssured.given()
+                .contentType(ContentType.JSON).accept(ContentType.JSON)
+                .header("Authorization", "Bearer " + jwtToken)
+                .body(request)
+                .when()
+                .put(URL_PRODUCTS)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .log().all()
+                .extract().body().asString();
     }
 
-
     @Test
-    @DisplayName("deletes removes product when successful")
+    @DisplayName("DELETE /v1/products removes product when successful")
+    @Sql(value = "/sql/init_three_products.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/clean_products.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void deleteProduct_RemovesProduct_WhenSuccessful() {
-        ProductModel productSaved = productRepository.save(ProductCreator.createProductToBeSaved());
+        List<ProductModel> productsList = productRepository.findAll();
+        ProductModel productToDelete = productsList.get(0);
 
-        ResponseEntity<Void> productModel = testRestTemplate.exchange(URL + "/{id}", HttpMethod.DELETE, null, Void.class, productSaved.getIdProduct());
+        RestAssured.given()
+                .contentType(ContentType.JSON).accept(ContentType.JSON)
+                .header("Authorization", "Bearer " + jwtToken)
+                .pathParam("id", productToDelete.getIdProduct())
+                .when()
+                .delete(URL_PRODUCTS + "/{id}")
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .log().all()
+                .extract().body().asString();
 
-        Assertions.assertThat(productModel).isNotNull();
-        Assertions.assertThat(productModel.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        productsList = productRepository.findAll();
+        Assertions.assertFalse(productsList.contains(productToDelete));
     }
 
     @Test
-    @DisplayName("deletes returns bad request when unsuccessful")
+    @DisplayName("DELETE /v1/products returns bad request when unsuccessful")
     void deleteProduct_ReturnsBadRequest_WhenUnsuccessful() {
-        ResponseEntity<Void> productModel = testRestTemplate.exchange(URL + "/{id}", HttpMethod.DELETE, null, Void.class, "123");
+        String expectedResponse = fileUtils.readResourceFile("products/response/delete-product-400.json");
 
-        Assertions.assertThat(productModel).isNotNull();
-        Assertions.assertThat(productModel.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        var id = "946f70e7-34d4-403e-9421-76c223dc2505";
+
+        String response = RestAssured.given()
+                .contentType(ContentType.JSON).accept(ContentType.JSON)
+                .header("Authorization", "Bearer " + jwtToken)
+                .when()
+                .pathParam("id", id)
+                .delete(URL_PRODUCTS + "/{id}")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .log().all()
+                .extract().body().asString();
+
+        assertThatJson(response)
+                .isEqualTo(expectedResponse);
     }
 }

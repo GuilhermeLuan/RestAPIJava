@@ -31,6 +31,7 @@ public class SecurityConfiguration {
                         authorize -> authorize
                                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/v1/products/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/v1/products").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
